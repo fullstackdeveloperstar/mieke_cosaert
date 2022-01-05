@@ -51,6 +51,16 @@
             <div class="box-tools">
               <form action="<?php echo base_url() ?>admin/projectListing" method="POST" id="searchList">
                 <div class="input-group">
+                  <select name="searchCat" class="form-control input-sm pull-right" style="width: 200px; margin:0 20px;">
+                    <option value="all" <?php echo $searchCat == 'all' ? 'selected' : ''?>>All</option>
+                  <?php
+                    foreach($categories as $key => $category){
+                      ?>
+                      <option value="<?=$category->cat_id?>" <?php echo $searchCat == $category->cat_id ? 'selected' : ''?>><?=$category->cat_name?></option>
+                      <?php
+                    }
+                  ?>
+                  </select>
                   <input type="text" name="searchText" value="<?php echo $searchText; ?>" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search"/>
                   <div class="input-group-btn">
                     <button class="btn btn-sm btn-default searchList"><i class="fa fa-search"></i></button>
@@ -69,12 +79,12 @@
                   <th>Name</th>
                   <th>Order</th>
                   <th>Online</th>
-                  <th>Pic Url</th>
                   <th class="text-center">Actions</th>
                 </tr>                
               </thead>
               <tbody>
                 <?php
+                  // var_dump($projectRecords);
                   foreach ($projectRecords as $key => $project) {
                 ?>
                 <tr>
@@ -84,9 +94,8 @@
                   <td><?php echo $project->proj_name; ?></td>
                   <td><?php echo $project->proj_order; ?></td>
                   <td><?php echo $project->online; ?></td>
-                  <td><?php echo $project->pict_url; ?></td>
                   <td class="text-center">
-                    <a class="btn btn-sm btn-info" href="<?php echo base_url().'admin/editProject/'.$project->id; ?>" title="Edit"><i class="fa fa-pencil"></i></a>
+                    <a class="btn btn-sm btn-info" href="<?php echo base_url().'admin/editProject/'.$project->proj_id; ?>" title="Edit"><i class="fa fa-pencil"></i></a>
                     <a class="btn btn-sm btn-danger deletePro" href="#" data-id="<?php echo $project->id; ?>" title="Delete"><i class="fa fa-trash"></i></a>
                   </td>
                 </tr>                  
@@ -105,12 +114,14 @@
     </div>
   </section>
 </div>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/common.js" charset="utf-8"></script>
 <script type="text/javascript">
   jQuery(document).ready(function(){
     jQuery('ul.pagination li a').click(function (e) {
       e.preventDefault();            
       var link = jQuery(this).get(0).href;            
       var value = link.substring(link.lastIndexOf('/') + 1);
+      console.log(value);
       jQuery("#searchList").attr("action", baseURL + "admin/projectListing/" + value);
       jQuery("#searchList").submit();
     });

@@ -40,6 +40,8 @@ class Project extends CI_Controller
             $data['category'] = $this->category_model->getCategory($id);
             $data['projects'] = $this->project_model->getProjects($id);
 
+            // var_dump($data['projects']);
+
             $this->load->view('contents/header_view', $data);
             $this->load->view('Projects', $data);
             $this->load->view('contents/footer_view');

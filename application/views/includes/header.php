@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title><?php echo $pageTitle; ?></title>
+    <title>Mieke Cosaert</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <!-- Bootstrap 3.3.4 -->
     <link href="<?php echo base_url(); ?>assets/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -21,6 +21,16 @@
     		color:red;
     		font-weight: normal;
     	}
+
+      @font-face {
+        font-family: 'Gotham';
+        src: url('<?=base_url()?>assets/Gotham/Gotham Book.otf');
+      }
+
+      h1, h2, h3, h4, h5, h6,
+      p, div, span, ul, li, button, input{
+        font-family: Gotham !important;
+      }
     </style>
     <script src="<?php echo base_url(); ?>assets/bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript">
@@ -42,9 +52,9 @@
         <!-- Logo -->
         <a href="<?php echo base_url(); ?>" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><b>CI</b>AS</span>
+          <span class="logo-mini"><b>Mieke</b></span>
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>CodeInsect</b>AS</span>
+          <span class="logo-lg"><b>Mieke </b>Cosaert</span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top" role="navigation">

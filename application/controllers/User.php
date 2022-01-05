@@ -44,9 +44,9 @@ class User extends BaseController
             $data['searchText'] = $searchText;
             $this->load->library('pagination');
             $count = $this->category_model->count_category($searchText);
-            $returns = $this->paginationCompress ( "categoryListing/", $count, 10 );
+            $returns = $this->paginationCompress ( "admin/categoryListing/", $count, 10 );
             $data['categoryRecords'] = $this->category_model->categoryListing($searchText, $returns["page"], $returns["segment"]);    
-            $this->global['pageTitle'] = 'CodeInsect : Category Listing';            
+            $this->global['pageTitle'] = 'Category Listing';            
             $this->loadViews("admin/categories", $this->global, $data, NULL);
         }
     }
@@ -59,7 +59,7 @@ class User extends BaseController
         }
         else
         {            
-            $this->global['pageTitle'] = 'CodeInsect : Add New Category';
+            $this->global['pageTitle'] = 'Add New Category';
 
             $this->loadViews("admin/addCategory", $this->global, NULL);
         }
@@ -75,7 +75,7 @@ class User extends BaseController
         {
             $this->load->library('form_validation');
             
-            $this->form_validation->set_rules('cat_id','Cat Id','trim|unique|required|max_length[128]');
+            $this->form_validation->set_rules('cat_id','Cat Id','trim|required|max_length[128]');
             $this->form_validation->set_rules('name','Name','trim|required|max_length[128]');
             $this->form_validation->set_rules('order','Order','trim|required|max_length[128]');
             $this->form_validation->set_rules('pict_url','Picture Url','trim|required|max_length[128]');
@@ -115,7 +115,7 @@ class User extends BaseController
             redirect('admin/categoryListing');
         } else {
             $data['catInfo'] = $this->category_model->getCatInfo($id);
-            $this->global['pageTitle'] = 'CodeInsect : Edit Category';            
+            $this->global['pageTitle'] = 'Edit Category';            
             $this->loadViews("admin/editCategory", $this->global, $data, NULL);
         }
     }
@@ -182,19 +182,25 @@ class User extends BaseController
         }
     }
 
-    function projectListing() {
+    function projectListing($page = 0) {
         if($this->isAdmin() == TRUE)
         {
             $this->loadThis();
         }
         else {
-            $searchText = $this->security->xss_clean($this->input->post('searchText')); 
+            $searchText = $this->security->xss_clean($this->input->post('searchText'));
             $data['searchText'] = $searchText;
+
+            $searchCat = $this->security->xss_clean($this->input->post('searchCat'));
+            $data['searchCat'] = $searchCat ? $searchCat : 'all';
+            
             $this->load->library('pagination');
-            $count = $this->project_model->count_project($searchText);
-            $returns = $this->paginationCompress ( "projectListing/", $count, 10 );
-            $data['projectRecords'] = $this->project_model->projectListing($searchText, $returns["page"], $returns["segment"]);
-            // $data['picture_url'] = $this->project_model->pictureListing($data['projectRecords']);    
+            $count = $this->project_model->count_project($searchText, $data['searchCat']);
+            $returns = $this->paginationCompress ( "admin/projectListing/", $count, 10 );
+
+            $data['projectRecords'] = $this->project_model->projectListing($searchText, $page, $returns["segment"], $data['searchCat']);
+            $data['categories'] = $this->category_model->getCategories();
+
             $this->global['pageTitle'] = 'CodeInsect : Project Listing';            
             $this->loadViews("admin/projects", $this->global, $data, NULL);
         }
@@ -208,7 +214,7 @@ class User extends BaseController
         }
         else
         {            
-            $this->global['pageTitle'] = 'CodeInsect : Add New Project';
+            $this->global['pageTitle'] = 'Add New Project';
             $data['categories'] = $this->category_model->getCategories();
 
             $this->loadViews("admin/addProject", $this->global, $data, NULL);
@@ -225,13 +231,15 @@ class User extends BaseController
         {
             $this->load->library('form_validation');
             
-            $this->form_validation->set_rules('cat_name','Category','trim|required|max_length[128]');
+            $this->form_validation->set_rules('proj_id','Project Id','trim|required|max_length[5]');
             $this->form_validation->set_rules('proj_name','Project Name','trim|required|max_length[128]');
-            $this->form_validation->set_rules('proj_order','Project Order','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_id','Picture Url','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_name','Picture Url','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_order','Picture Url','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_url','Picture Url','trim|required|max_length[128]');
+            $this->form_validation->set_rules('proj_order','Project Order','trim|required|max_length[3]');
+            $this->form_validation->set_rules('proj_online','Project Online','trim|required|max_length[1]');
+            // $this->form_validation->set_rules('pict_id','Picture Id','trim|required|max_length[8]');
+            // $this->form_validation->set_rules('pict_name','Picture Name','trim|required|max_length[128]');
+            // $this->form_validation->set_rules('pict_order','Picture Order','trim|required|max_length[2]');
+            // $this->form_validation->set_rules('pict_order','Picture Online','trim|required|max_length[2]');
+            // $this->form_validation->set_rules('pict_url','Picture Url','trim|required|max_length[128]');
             
             if($this->form_validation->run() == FALSE)
             {
@@ -239,23 +247,27 @@ class User extends BaseController
             }
             else
             {
+                $result1=0;
                 $cat = $this->security->xss_clean($this->input->post('cat_name'));                
                 $cat_id = explode(' ', $cat);
                 $cat_id = (int)$cat_id[0];
                 $proj_id = (int)$this->security->xss_clean($this->input->post('proj_id'));                
                 $proj_name = $this->security->xss_clean($this->input->post('proj_name'));
                 $proj_order = (int)$this->security->xss_clean($this->input->post('proj_order'));
-                $online = (int)$this->security->xss_clean($this->input->post('online'));
-                $pict_id = (int)$this->security->xss_clean($this->input->post('pict_id'));
-                $pict_name = $this->security->xss_clean($this->input->post('pict_name'));
-                $pict_order = (int)$this->security->xss_clean($this->input->post('pict_order'));
-                $pict_online = (int)$this->security->xss_clean($this->input->post('pict_online'));
-                $pict_url = $this->security->xss_clean($this->input->post('pict_url'));            
+                $online = (int)$this->security->xss_clean($this->input->post('proj_online'));
                 $projectInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'proj_name'=>$proj_name, 'proj_order'=>$proj_order, 'online'=>$online);
-                $pictureInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'pict_id'=>$pict_id, 'pict_name'=>$pict_name, 'pict_order'=>$pict_order, 'online'=>$pict_online, 'picture_url'=>$pict_url);
-                $result = $this->project_model->addNewProject($projectInfo, $pictureInfo);
+                $result = $this->project_model->addNewProject($projectInfo);
+                for($x=1; $x <= $this->input->post('row'); $x++) {
+                    $pict_id = (int)$this->security->xss_clean($this->input->post('pict_id-'.$x));
+                    $pict_name = $this->security->xss_clean($this->input->post('pict_name-'.$x));
+                    $pict_order = (int)$this->security->xss_clean($this->input->post('pict_order-'.$x));
+                    $pict_online = (int)$this->security->xss_clean($this->input->post('pict_online-'.$x));
+                    $pict_url = $this->security->xss_clean($this->input->post('pict_url-'.$x));
+                    $pictureInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'pict_id'=>$pict_id, 'pict_name'=>$pict_name, 'pict_order'=>$pict_order, 'online'=>$pict_online, 'picture_url'=>$pict_url);
+                    $result1 = $this->project_model->addNewPicture($pictureInfo);
+                }
                 
-                if($result > 0)
+                if($result > 0 && $result1 > 0)
                 {
                     $this->session->set_flashdata('success', 'New Project created successfully');
                 }
@@ -269,16 +281,21 @@ class User extends BaseController
         }
     }
 
-    function editProject($id = NULL)
+    function editProject($proj_id = NULL)
     {
-        if($id == null)
+        if($proj_id == null)
         {
             redirect('admin/projectListing');
         } else {
-            $data['proInfo'] = $this->project_model->getProInfo($id);
+            $data['proInfo'] = $this->project_model->getProInfo($proj_id);
+            $data['picInfo'] = $this->project_model->getPicInfo($proj_id);
             $data['categories'] = $this->category_model->getCategories();
-            $this->global['pageTitle'] = 'CodeInsect : Edit Project';            
+            $this->global['pageTitle'] = 'Edit Project';            
+            
+            // var_dump($data['proInfo']);
+            
             $this->loadViews("admin/editProject", $this->global, $data, NULL);
+
         }
     }
 
@@ -292,45 +309,88 @@ class User extends BaseController
         {
             $this->load->library('form_validation');
             
-            $id = $this->input->post('id');
-            
-            $this->form_validation->set_rules('cat_name','Category','trim|required|max_length[128]');
+            $this->form_validation->set_rules('proj_id','Project Id','trim|required|max_length[5]');
             $this->form_validation->set_rules('proj_name','Project Name','trim|required|max_length[128]');
-            $this->form_validation->set_rules('proj_order','Project Order','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_id','Picture Url','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_name','Picture Url','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_order','Picture Url','trim|required|max_length[128]');
-            $this->form_validation->set_rules('pict_url','Picture Url','trim|required|max_length[128]');
+            $this->form_validation->set_rules('proj_order','Project Order','trim|required|max_length[3]');
+            $this->form_validation->set_rules('proj_online','Project Online','trim|required|max_length[1]');
+            // $this->form_validation->set_rules('pict_id','Picture Id','trim|required|max_length[8]');
+            // $this->form_validation->set_rules('pict_name','Picture Name','trim|required|max_length[128]');
+            // $this->form_validation->set_rules('pict_order','Picture Order','trim|required|max_length[2]');
+            // $this->form_validation->set_rules('pict_order','Picture Online','trim|required|max_length[2]');
+            // $this->form_validation->set_rules('pict_url','Picture Url','trim|required|max_length[128]');
             
             if($this->form_validation->run() == FALSE)
             {
-                $this->editProject($id);
+                // $this->editProject();
             }
             else
             {
+                $result=0;
+                $result1=0;
                 $cat = $this->security->xss_clean($this->input->post('cat_name'));                
                 $cat_id = explode(' ', $cat);
                 $cat_id = (int)$cat_id[0];
                 $proj_id = (int)$this->security->xss_clean($this->input->post('proj_id'));                
                 $proj_name = $this->security->xss_clean($this->input->post('proj_name'));
                 $proj_order = (int)$this->security->xss_clean($this->input->post('proj_order'));
-                $online = (int)$this->security->xss_clean($this->input->post('online'));
-                $pict_id = (int)$this->security->xss_clean($this->input->post('pict_id'));
-                $pict_name = $this->security->xss_clean($this->input->post('pict_name'));
-                $pict_order = (int)$this->security->xss_clean($this->input->post('pict_order'));
-                $pict_online = (int)$this->security->xss_clean($this->input->post('pict_online'));
-                $pict_url = $this->security->xss_clean($this->input->post('pict_url'));            
-                $projectInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'proj_name'=>$proj_name, 'proj_order'=>$proj_order, 'online'=>$online);
-                $pictureInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'pict_id'=>$pict_id, 'pict_name'=>$pict_name, 'pict_order'=>$pict_order, 'online'=>$pict_online, 'picture_url'=>$pict_url);
-                $result = $this->project_model->updateProject($projectInfo, $pictureInfo, $id);
+                $online = (int)$this->security->xss_clean($this->input->post('proj_online'));                
+                $count = 0;
+
+                $id = (int)$this->security->xss_clean($this->input->post('id'));   
+
+                if ($this->input->post('cat_property') == "edit") {
+                    $projectInfo = array('proj_name'=>$proj_name, 'proj_order'=>$proj_order, 'online'=>$online, 'cat_id'=>$cat_id, 'proj_id'=>$proj_id);
+                    $result = $this->project_model->updateProject($projectInfo, $id);
+                    // var_dump($projectInfo);
+                    
+                    $count ++;
+                } else {
+                    $result = 1;
+                }
+               
+                // exit();
+
+                for($x=0; $x <= $this->input->post('row'); $x++) {
+                    if ($this->input->post('picture_property-'.$x) == "edit") {
+                        $pict_id = (int)$this->security->xss_clean($this->input->post('pict_id-'.$x));
+                        $pict_name = $this->security->xss_clean($this->input->post('pict_name-'.$x));
+                        $pict_order = (int)$this->security->xss_clean($this->input->post('pict_order-'.$x));
+                        $pict_online = (int)$this->security->xss_clean($this->input->post('pict_online-'.$x));
+                        $pict_url = $this->security->xss_clean($this->input->post('pict_url-'.$x));
+                        $pictureInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'pict_id'=>$pict_id, 'pict_name'=>$pict_name, 'pict_order'=>$pict_order, 'online'=>$pict_online, 'picture_url'=>$pict_url);
+                        $result1 = $this->project_model->updatePicture($pictureInfo, $pict_id);
+                        $count ++;
+
+                        // var_dump($pictureInfo);
+                        
+                    } elseif ($this->input->post('picture_property-'.$x) == "new") {
+                        $pict_id = (int)$this->security->xss_clean($this->input->post('pict_id-'.$x));
+                        $pict_name = $this->security->xss_clean($this->input->post('pict_name-'.$x));
+                        $pict_order = (int)$this->security->xss_clean($this->input->post('pict_order-'.$x));
+                        $pict_online = (int)$this->security->xss_clean($this->input->post('pict_online-'.$x));
+                        $pict_url = $this->security->xss_clean($this->input->post('pict_url-'.$x));
+                        $pictureInfo = array('cat_id'=>$cat_id, 'proj_id'=>$proj_id, 'pict_id'=>$pict_id, 'pict_name'=>$pict_name, 'pict_order'=>$pict_order, 'online'=>$pict_online, 'picture_url'=>$pict_url);
+                        $result1 = $this->project_model->addNewPicture($pictureInfo, $pict_id);
+                        $count ++;
+
+                        // var_dump($pictureInfo);
+                    } else {
+                        $result1 = 1;
+                    }                   
+                }
+
+                // exit();
+
                 
-                if($result > 0)
+                
+                // if($result > 0 && $result1 > 0)
+                if($count > 0)
                 {
                     $this->session->set_flashdata('success', 'Project updated successfully');
                 }
                 else
                 {
-                    $this->session->set_flashdata('error', 'Project update failed');
+                    $this->session->set_flashdata('error', 'Project updation failed');
                 }
                 
                 redirect('admin/projectListing');
@@ -338,8 +398,57 @@ class User extends BaseController
         }
     }
 
+    function deleteProject() {
+        if($this->isAdmin() == TRUE)
+        {
+            echo(json_encode(array('status'=>'access')));
+        }
+        else
+        {
+            $id = $this->input->post('id');
+            
+            $result = $this->project_model->deleteProject($id);
+            
+            if ($result > 0) { echo(json_encode(array('status'=>TRUE))); }
+            else { echo(json_encode(array('status'=>FALSE))); }
+        }
+    }
+
+    function deletePic($pic_id = NULL) {
+        if($pic_id == null)
+        {
+            redirect('admin/projectListing');
+        } else {
+            $this->project_model->deletePicture($pic_id);
+            echo json_encode(array("success" => true));
+        }
+    }
 
 
+    function userListing()
+    {
+        if($this->isAdmin() == TRUE)
+        {
+            $this->loadThis();
+        }
+        else
+        {        
+            $searchText = $this->security->xss_clean($this->input->post('searchText'));
+            $data['searchText'] = $searchText;
+            
+            $this->load->library('pagination');
+            
+            $count = $this->user_model->userListingCount($searchText);
+
+            $returns = $this->paginationCompress ( "userListing/", $count, 10 );
+            
+            $data['userRecords'] = $this->user_model->userListing($searchText, $returns["page"], $returns["segment"]);
+            
+            $this->global['pageTitle'] = 'CodeInsect : User Listing';
+            
+            $this->loadViews("users", $this->global, $data, NULL);
+        }
+    }
 
     /**
      * This function is used to check whether email already exist or not

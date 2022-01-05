@@ -39,7 +39,7 @@ class Login extends CI_Controller
         }
         else
         {
-            redirect('/dashboard');
+            redirect('/admin/dashboard');
         }
     }
     

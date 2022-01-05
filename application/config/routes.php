@@ -56,6 +56,7 @@ $route['projects/(:num)'] = "project";
 $route['project_detail/(:num)'] = "project/project_detail";
 $route['about'] = "about";
 $route['contact'] = "contact";
+$route['sendcontact'] = "contact/sendMailer";
 
 $route['404_override'] = 'error_404';
 $route['translate_uri_dashes'] = FALSE;
@@ -67,6 +68,7 @@ $route['admin'] = 'login/loginMe';
 $route['admin/dashboard'] = 'user';
 $route['logout'] = 'user/logout';
 $route['admin/categoryListing'] = 'user/categoryListing';
+$route['admin/categoryListing/(:num)'] = 'user/categoryListing/$1';
 $route['admin/addCategory'] = "user/addCategory";
 $route['admin/addNewCategory'] = "user/addNewCategory";
 $route['admin/editCategory'] = "user/editCategory";
@@ -74,12 +76,14 @@ $route['admin/editCategory/(:num)'] = "user/editCategory/$1";
 $route['admin/updateCategory'] = "user/updateCategory";
 $route['admin/deleteCategory'] = "user/deleteCategory";
 $route['admin/projectListing'] = 'user/projectListing';
+$route['admin/projectListing/(:num)'] = "user/projectListing/$1";
 $route['admin/addProject'] = "user/addProject";
 $route['admin/addNewProject'] = "user/addNewProject";
 $route['admin/editProject'] = "user/editProject";
 $route['admin/editProject/(:num)'] = "user/editProject/$1";
 $route['admin/updateProject'] = "user/updateProject";
-
+$route['admin/deleteProject'] = "user/deleteProject";
+$route['admin/deletepic/(:num)'] = "user/deletePic/$1";
 
 
 $route['admin/userListing'] = 'user/userListing';

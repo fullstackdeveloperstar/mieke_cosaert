@@ -30,7 +30,7 @@
             <div class="box-body">
               <div class="form-group">
                 <label for="name">Category Id <span class="required">*</span></label>
-                <input type="text" class="form-control" value="" id="catId" name="catId" maxlength="128">
+                <input type="text" class="form-control" value="" id="cat_id" name="cat_id" maxlength="128">
               </div>                               
               <div class="form-group">
                 <label for="name">Name <span class="required">*</span></label>
@@ -98,13 +98,13 @@
     var validator = addCategoryForm.validate({
       
       rules:{
-        catId: { required : true },
+        cat_id: { required : true },
         name :{ required : true },
         order :{ required : true },
         pict_url :{ required : true }
       },
       messages:{
-        catId :{ required : "This field is required" },
+        cat_id :{ required : "This field is required" },
         name :{ required : "This field is required" },
         order :{ required : "This field is required" },
         pict_url :{ required : "This field is required" }

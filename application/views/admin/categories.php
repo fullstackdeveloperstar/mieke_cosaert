@@ -83,7 +83,7 @@
                   <td><?php echo $category->picture_url; ?></td>
                   <td class="text-center">
                     <a class="btn btn-sm btn-info" href="<?php echo base_url().'admin/editCategory/'.$category->id; ?>" title="Edit"><i class="fa fa-pencil"></i></a>
-                    <a class="btn btn-sm btn-danger deleteCat" href="#" data-id="<?php echo $category->id; ?>" title="Delete"><i class="fa fa-trash"></i></a>
+                    <a class="btn btn-sm btn-danger deleteCat" href="#" data-id="<?php echo $category->cat_id; ?>" title="Delete"><i class="fa fa-trash"></i></a>
                   </td>
                 </tr>                  
                 <?php  

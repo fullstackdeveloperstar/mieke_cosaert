@@ -99,23 +99,19 @@ class Category_model extends CI_Model
         return TRUE;
     }
 
-    // function deleteCategory($catId, $pictId)
-    // {
-    //     $this->db->where('pict_id', $pictId);
-    //     $this->db->delete('pictures');
-        
-    //     $this->db->affected_rows();
-
-    //     $this->db->where('cat_id', $catId);
-    //     $this->db->delete('categories');
-        
-    //     return TRUE;
-    // }
-
-    function deleteCategory($id)
+    function deleteCategory($cat_id)
     {
-        $this->db->where('id', $id);
+        $this->db->where('cat_id', $cat_id);
+        $this->db->delete('pictures');
+        $this->db->affected_rows();
+
+        $this->db->where('cat_id', $cat_id);
+        $this->db->delete('projects');
+        $this->db->affected_rows();
+
+        $this->db->where('cat_id', $cat_id);
         $this->db->delete('categories');
+        $this->db->affected_rows();
         
         return TRUE;
     }

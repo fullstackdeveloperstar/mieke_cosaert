@@ -27,10 +27,12 @@ class Project_model extends CI_Model
     	} else {
     		$this->db->select('projects.*, pictures.picture_url as pict_url');
 	    	$this->db->from('projects');
-	    	$this->db->where('projects.cat_id =', $cat_id);
-	    	$this->db->where('pictures.pict_order =', 1);
+            $this->db->where('projects.cat_id =', $cat_id);
+            $this->db->where('projects.online =', '1');
+            // $this->db->where('pictures.pict_order =', 1);
+            $this->db->group_by('projects.proj_id');
 	    	$this->db->join('pictures', 'projects.proj_id = pictures.proj_id', 'left');
-	    	$this->db->order_by('projects.id', 'ASC');
+	    	$this->db->order_by('projects.proj_order', 'ASC');
 	    	$query = $this->db->get();
 
 	    	$result = $query->result();	
@@ -51,10 +53,15 @@ class Project_model extends CI_Model
     	return $result;
     }
 
-    function count_project($searchText = '')
+    function count_project($searchText = '', $cat = 'all')
     {
         $this->db->select('*');
         $this->db->from('projects');
+
+        if($cat != 'all') {
+            $this->db->where('cat_id', $cat);
+        }
+
         if(!empty($searchText)) {
             $likeCriteria = "(proj_name LIKE '%".$searchText."%')";
             $this->db->where($likeCriteria);
@@ -64,73 +71,104 @@ class Project_model extends CI_Model
         return $query->num_rows();
     }
 
-    function projectListing($searchText = '', $page, $segment)
+    function projectListing($searchText = '', $page, $segment, $cat = 'all')
     {
-        $this->db->select('projects.*, pictures.pict_id as pict_id, pictures.picture_url as pict_url');
+        $this->db->select('projects.*');
         $this->db->from('projects');
-        $this->db->join('pictures', 'projects.cat_id = pictures.cat_id', 'left');
         if(!empty($searchText)) {
             $likeCriteria = "(projects.proj_name LIKE '%".$searchText."%')";
             $this->db->where($likeCriteria);
         }
-        $this->db->order_by('projects.proj_id', 'ASC');
-        $this->db->limit($page, $segment);
+        if($cat != 'all') {
+            $this->db->where('projects.cat_id', $cat);
+        }
+        $this->db->order_by('projects.proj_order', 'ASC');
+        $this->db->limit(10, $page);
         $query = $this->db->get();
 
         $result = $query->result();        
         return $result;
     }
 
-    function pictureListing($projIds)
-    {
-        $query = array();
-        foreach ($projIds as $projId) {
-            $this->db->select('pictures.picture_url');
-            $this->db->from('pictures');
-            $this->db->where('pictures.proj_id=', $projId);
-            $query = $query.array_push($this->db->get());
-        }
-
-        return $query;
-    }
-
-    function addNewProject($projectInfo, $pictureInfo)
+    function addNewProject($projectInfo)
     {
         $this->db->trans_start();
         $this->db->insert('projects', $projectInfo);
         
         $insert_id = $this->db->insert_id();
         
-        $this->db->trans_complete(); 
-
-        $this->db->trans_start();
-        $this->db->insert('pictures', $pictureInfo);
-        
         $this->db->trans_complete();               
         
         return $insert_id;
     }
 
-    function getProInfo($id)
+    function addNewPicture($pictureInfo)
     {
-        $this->db->select('projects.*, categories.cat_name, pictures.pict_id as pict_id, pictures.pict_name as pict_name, pictures.pict_order as pict_order, pictures.online as pict_online, pictures.picture_url as pict_url');
-        $this->db->from('projects');
-        $this->db->where('projects.id =', $id);
-        $this->db->join('pictures', 'projects.proj_id = pictures.proj_id', 'left');
-        $this->db->join('categories', 'projects.cat_id = categories.cat_id', 'left');
+        $this->db->trans_start();
+        $this->db->insert('pictures', $pictureInfo);
+        $insert_id = $this->db->insert_id();
+        $this->db->trans_complete();               
+        
+        return $insert_id;
+    }
+
+    function getProInfo($proj_id)
+    {
+        $this->db->select('projects.*, categories.cat_name as cat_name');
+        $this->db->from('projects');        
+        $this->db->where('projects.proj_id =', $proj_id);
+        $this->db->join('categories', 'categories.cat_id=projects.cat_id', 'left');
         $query = $this->db->get();
 
         return $query->row();
     }
 
-    function updateProject($projectInfo, $pictureInfo, $catId)
+    function getPicInfo($proj_id)
     {
-        $this->db->where('cat_id', $catId);
-        $this->db->update('categories', $categoryInfo);
+        $this->db->select('pictures.*');
+        $this->db->from('pictures');
+        $this->db->where('proj_id', $proj_id);
+        $query = $this->db->get();
 
-        $this->db->where('pict_id', $pictId);
+        return $query->result();
+    }
+
+    function updateProject($projectInfo, $id)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('projects', $projectInfo);
+        
+        return TRUE;
+    }
+
+    function updatePicture($pictureInfo, $pict_id)
+    {
+        $this->db->where('pict_id', $pict_id);
         $this->db->update('pictures', $pictureInfo);
         
+        return 1;
+    }
+
+    function deletePicture($pict_id)
+    {
+        $this->db->where('pict_id', $pict_id);
+        $this->db->delete('pictures');
+        
+        return 1;
+    }
+
+    function deleteProject($id)
+    {
+        // print_r($id);
+        // $this->db->where('id', $id);
+        // $this->db->delete('pictures');
+        // $this->db->affected_rows();
+
+        $this->db->where('id', $id);
+        $this->db->delete('projects');
+        
+        $this->db->affected_rows();
+
         return TRUE;
     }
 }

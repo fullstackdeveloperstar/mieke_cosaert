@@ -1,10 +1,21 @@
 <style type="text/css">
+  .carousel-control-prev-icon {
+    background-image: url("<?php echo base_url(); ?>assets/images/prev.png");
+    width: 30px;
+    height: 45px;
+  }
+  .carousel-control-next-icon {
+    background-image: url("<?php echo base_url(); ?>assets/images/next.png");
+    width: 30px;
+    height: 45px;
+  }
+
   .carousel-caption h5 {
     font-family: Assistant;
     font-style: normal;
     font-weight: bold;
-    font-size : 28px;
-    text-transform: uppercase;
+    font-size : 20px;
+    text-transform: none;
   }
 
   .carousel-caption a {
@@ -13,48 +24,104 @@
     font-weight: normal;
     font-size : 16px;
     text-transform: uppercase;
+    margin-left: -11px;
   }
+  
+  .carousel-control-prev-icon {
+    background-image: url("<?php echo base_url(); ?>assets/images/prev.png");
+    width: 30px;
+    height: 45px;
+  }
+  .carousel-control-next-icon {
+    background-image: url("<?php echo base_url(); ?>assets/images/next.png");
+    width: 30px;
+    height: 45px;
+  }
+  
+ .chevron::before {
+	border-style: solid;
+	border-width: 0.25em 0.25em 0 0;
+	content: '';
+	display: inline-block;
+	height: 1.5em;
+	left: 0.15em;
+	position: relative;
+	top: 0.15em;
+	transform: rotate(-45deg);
+	vertical-align: top;
+	width: 1.5em;
+}
+
+.chevron.bottom:before {
+	top: 0;
+	transform: rotate(135deg);
+}
+
+.view-project{
+    position: fixed;
+    bottom: 20px;
+    color: white;
+}
+
+
+.carousel-custom{
+    height: 100vh;
+    position: relative;
+}
+
+.carousel-item{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: block;
+    opacity: 0;
+    transition: all 3s ease;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.carousel-item.active{
+    opacity: 1;
+    transition: all 3s ease;
+}
+
+.project-title{
+    position: absolute;
+    bottom: 50px;
+    text-align: center;
+    width: 100%;
+    color: white;
+}
 </style>
 
-<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-  <ol class="carousel-indicators">
+<div class="carousel-custom">
     <?php 
-      foreach($categories as $key => $category)
-      {
-    ?>
-      <li data-target="#carouselExampleIndicators" data-slide-to="<?php echo $key; ?>"></li>
-    <?php
-      }
-    ?>
-  </ol>
-  <div class="carousel-inner">
-    <?php 
-      foreach($categories as $category)
-      {
-    ?>
-    <div class="carousel-item">
-      <img class="d-block w-100" style="height: 100vh;" src="<?php echo base_url() ?>assets/images/<?php echo $category->picture_url; ?>" alt="First slide">
-      <div class="carousel-caption d-none d-md-block">
-        <h5><?php echo $category->cat_name; ?></h5>
-        <a href="<?php echo base_url(); ?>projects/<?php echo $category->cat_id; ?>" type="button" class="btn btn-outline-light">VIEW PROJECTS</a>
-      </div>
-    </div>
-    <?php
-      }
-    ?>
-  </div>
-  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
+        foreach($categories as $key => $category)
+        {
+      ?>
+       <div class="carousel-item carousel-item-<?=$key?> <?php echo $key == 0 ? 'active' :  ''?>" style="background-image: url(<?php echo base_url() ?>assets/images/<?php echo $category->picture_url; ?>);">
+           
+           <!--<h5 class="project-title"><?php echo $category->cat_name; ?></h5>-->
+          <a href="<?php echo base_url(); ?>projects/<?php echo $category->cat_id; ?>"  class="view-project">
+             <span class="chevron bottom"></span>
+          </a>
+           </div>
+      <?php
+        }
+      ?>
 </div>
 
 <script>
   $(document).ready(function() {
-    $(".carousel-item:first-child").addClass("active");
+    var activeKey = 1;
+    setInterval(function(){
+        $(".carousel-item").removeClass("active");
+        $('.carousel-item-' + activeKey).addClass("active");
+        activeKey ++;
+        activeKey = activeKey % 4;
+    }, 4000);
   });
 </script> 

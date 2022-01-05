@@ -1,17 +1,17 @@
 <style type="text/css">
 	.title {
-		font-family: Assistant ;
+		font-family: Assistant;
 		font-style: normal;
 		font-weight: normal;
-		font-size : 22px;
+		font-size: 22px;
 		text-transform: uppercase;
 	}
 
 	.content {
-		font-family: Assistant ;
+		font-family: Assistant;
 		font-style: normal;
 		font-weight: normal;
-		font-size : 14px;
+		font-size: 14px;
 		text-transform: uppercase;
 	}
 </style>
@@ -19,35 +19,31 @@
 <div class="container-fluid mt-5">
 	<div class="row">
 		<div class="col-md-11 mx-auto">
-			<p class="title">MIEKE COSAERT</p>
+			<p class="title" style="text-transform: none;">Mieke Cosaert architecten</p>
 		</div>
 		<div class="col-md-10 mt-5 mx-auto">
 			<div class="row">
-				<div class="col-md-4">
+				<div class="col-md-6">
 					<img class="img-fluid" src="<?php echo base_url(); ?>assets/images/mieke.jpg" alt="MIEKE" />
 				</div>
-				<div class="col-md-8 content">
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+				<div class="col-md-6 content">
+					<p style="text-transform: none;">
+						We streven naar tijdloze eenvoud met een natuurlijke harmonie tussen woning, mens en omgeving.
+						<br><br>Door onze passie voor architectuur ontwerpen we een ruimte volledig op maat van de bewoners waar men zich helemaal thuis kan voelen.
+						<br><br>Elk project is een nieuwe uitdaging en een opportuniteit om alles zo verfijnd en functioneel mogelijk uit te werken.
+						<br><br>Vanuit een diepgaande dialoog worden uw verwachtingen helder in beeld gebracht.
+						<br><br>Op basis van een inspirerend creatief ontwerp bieden we u een realistische planning, een correct budgetkader en een duurzame uitvoering aan.
+						<br><br>Elk project wordt vol enthousiasme en met een geraffineerde toets aangepakt.
+						<br><br>
+						Architect Mieke Cosaert
+
+
 					</p>
-					<p>
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-						consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-						cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-						proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-					</p>
-					<h6>Lorem ipsum dolor sit amet</h6>
+					
 				</div>
 			</div>
-		</div>	
-	</div>	
+		</div>
+	</div>
 </div>
 <script type="text/javascript">
 	$(document).ready(function() {
